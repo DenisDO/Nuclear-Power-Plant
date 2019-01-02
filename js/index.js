@@ -5,13 +5,16 @@ const startButton = document.getElementById(`start_button`);
 const reloadButton = document.getElementById(`reload_button`);
 const stopButton = document.getElementById(`stop_button`);
 
-const levers = [true, null, null, null];
 const currentLever = 0;
-let nextLever = 1;
-let currentID = null;
-let marker = true;
+let levers;
+let nextLever;
+let marker;
 
 function startTheProgram() {
+  levers = [true, null, null, null];
+  nextLever = 1;
+  marker = true;
+
   socket = new WebSocket(url);
 
   socket.onopen = () => {console.log(`Connected to the ${url}`);};
@@ -38,16 +41,29 @@ function startTheProgram() {
     }
   
     if (data.newState === `poweredOn`) {
+      switchAllLevers();
       marker = !marker;
       console.warn(`Maker is changed from ${!marker} to ${marker}`);
     }
   
     if (data.newState === `poweredOff`) {
+      switchAllLevers();
       console.log(`Token: ${data.token}`);
       showToken(data.token);
       stopTheProgram();
     }
   };
+}
+
+function switchAllLevers() {
+  for (let i = 0; i < 4; i++) {
+    const element = document.getElementById(`lever${i}`);
+    if (marker) {
+      element.className = `lever__image lever__pos2`;
+    } else {
+      element.className = `lever__image lever__pos1`;
+    }
+  }
 }
 
 function reloadTheProgram() {
@@ -58,6 +74,7 @@ function reloadTheProgram() {
 function stopTheProgram() {
   socket.onclose = () => {console.log(`Connection is closed`);};
   socket.close();
+  socket = null;
 }
 
 function turnOffPlant(stateId) {
