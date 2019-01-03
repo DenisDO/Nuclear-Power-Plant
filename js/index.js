@@ -33,7 +33,7 @@ function startTheProgram() {
     if (data.same === true) {
       syncServerAndLocalLevers();
   
-      if(isLeversSame()) {
+      if(isLeversSame() && nextLever === 3) {
         turnOffPlant(data.stateId);
       }
   
